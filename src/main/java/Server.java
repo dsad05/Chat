@@ -19,7 +19,6 @@ public class Server {
             System.out.println("Server started. Server Port: " + getPort());
             System.out.println("Waiting for connection...");
             initConnections();
-            System.out.println("Waiting for clients...");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,14 +36,19 @@ public class Server {
     }
 
     private void close() throws IOException {
+        System.out.println("Closing server...");
         dataInputStream.close();
         server.close();
     }
 
     private void readMessages() throws IOException {
-        String line = "";
-        while(!line.equals(STOP_COMMAND)) {
+        String line;
+        while (true) {
             line = dataInputStream.readUTF();
+            if (line.equals(STOP_COMMAND)) {
+                System.out.println("Got STOP message");
+                break;
+            }
             System.out.println("New message:");
             System.out.println(line);
         }
