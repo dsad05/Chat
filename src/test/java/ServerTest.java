@@ -26,7 +26,6 @@ class ServerTest {
 
     @AfterEach
     void stopServer() {
-        System.out.println("Stopping server");
         serverThread.interrupt();
     }
 
@@ -37,17 +36,11 @@ class ServerTest {
 
     @Test
     void testServerPortIsBlocked() {
-        ServerSocket testSocket = null;
-        try {
-            testSocket = new ServerSocket(serverPort);
+        try (ServerSocket ignored = new ServerSocket(serverPort)) {
             fail("Expected BindException, but no exception was thrown!");
         } catch (BindException e) {
         } catch (IOException e) {
             fail("Unexpected IOException: " + e.getMessage());
-        } finally {
-            if (testSocket != null && !testSocket.isClosed()) {
-                System.out.println("Closing test socket");
-            }
         }
     }
 
@@ -57,7 +50,7 @@ class ServerTest {
              DataOutputStream out = new DataOutputStream(client.getOutputStream());
              DataInputStream in = new DataInputStream(client.getInputStream())) {
 
-            out.writeUTF("hello123");  // Wysyłamy wiadomość
+            out.writeUTF("hello123");
             out.flush();
             out.writeUTF("STOP");
             out.flush();
